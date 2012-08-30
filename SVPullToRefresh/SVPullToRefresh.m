@@ -301,7 +301,10 @@ static CGFloat const SVPullToRefreshViewHeight = 60;
 
 - (void)triggerRefresh {
     self.state = SVPullToRefreshStateLoading;
-    [self.scrollView setContentOffset:CGPointMake(0, -SVPullToRefreshViewHeight) animated:YES];
+    // The following line is not necessary (and is actually harmful),
+    // since the state setter above starts animation and modifies the
+    // scroll view's content offset.
+    // [self.scrollView setContentOffset:CGPointMake(0, -SVPullToRefreshViewHeight) animated:YES];
 }
 
 - (void)startAnimating{
@@ -313,7 +316,9 @@ static CGFloat const SVPullToRefreshViewHeight = 60;
     newInsets.top = self.frame.origin.y*-1+self.originalScrollViewContentInset.top;
     newInsets.bottom = self.scrollView.contentInset.bottom;
     [self setScrollViewContentInset:newInsets];
-    [self.scrollView setContentOffset:CGPointMake(0, -self.frame.size.height) animated:NO];
+    // Incorporate the view's height as well as the existing
+    // content inset when setting the content offset.
+    [self.scrollView setContentOffset:CGPointMake(0, -self.frame.size.height-self.originalScrollViewContentInset.top) animated:NO];
     [self rotateArrow:0 hide:YES];
 }
 
